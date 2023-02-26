@@ -148,7 +148,7 @@
                         'txid': payment.transaction.txid,
                         'app_client': 'auth_example'
                     };
-                    return $.post("https://picoinmag.000webhostapp.com/index.php", data).done(function (data) {
+                    return $.post(/* url to backend that handles server side verification*/, data).done(function (data) {
                         $("#button_click").prop("disabled", false);
                     }).fail(function () {
                         $("#button_click").prop("disabled", false);
@@ -211,7 +211,7 @@
                             'txid': '',
                             'app_client': 'auth_example'
                         };
-                        return $.post("https://picoinmag.000webhostapp.com/index.php", data).done(function (data) {
+                        return $.post(/* url to backend that handles server side verification*/, data).done(function (data) {
                             $("#button_click").prop("disabled", false);
                         }).fail(function () {
                             $("#button_click").prop("disabled", false);
@@ -224,7 +224,7 @@
                             "txid": txid,
                             'app_client': 'auth_example'
                         };
-                        return $.post("https://picoinmag.000webhostapp.com/index.php", data).done(function (data) {
+                        return $.post(/* url to backend that handles server side verification*/, data).done(function (data) {
                             $("#button_click").prop("disabled", false);
                         }).fail(function () {
                             $("#button_click").prop("disabled", false);
