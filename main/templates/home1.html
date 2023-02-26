@@ -1,0 +1,260 @@
+{% extends 'base.html' %}
+{% block content %}
+<main class="container mt-3 mb-5">
+    <!-- featured news -->
+    <div class="row my-3">
+        <!-- Left -->
+        <div class="col-md-7">
+            <div class="card mb-3">
+                <img src="media/{{first_news.image}}" class="card-img-top" alt="{{first_news.title}}">
+                <div class="card-body">
+                    <h5 class="card-title">{{first_news.title}}</h5>
+                    <hr />
+                    <p class="card-text"><a href="/detail/{{first_news.id}}" class="btn btn-sm btn-primary">Read
+                            Full</a></p>
+                </div>
+            </div>
+        </div>
+        <!-- Right -->
+        <div class="col-md-5" style="max-height: 450px; overflow: auto;">
+            {% for news in three_news %}
+            <!-- News Box -->
+            <div class="card">
+                <div class="row no-gutters">
+                    <div class="col-md-4">
+                        <img src="media/{{news.image}}" class="card-img-top" alt="{{news.title}}">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">{{news.title}}</h5>
+                            <p class="card-text"><a href="/detail/{{news.id}}" class="btn btn-sm btn-primary">Read
+                                    Full</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr />
+            {% endfor %}
+        </div>
+    </div>
+    <!-- Category Wise News -->
+    {% for category in three_categories %}
+    <h3 class="border-bottom pb-1">{{category.title}} <a href="/category/{{category.id}}"
+            class="float-right btn btn-sm btn-dark">In this Category</a></h3>
+    <div class="row my-4">
+        {% for news in category.news_set.all %}
+        {% if forloop.counter < 5 %} <!-- News box -->
+            <div class="col-md-3">
+                <div class="card mb-3 shadow">
+                    <img src="/media/{{news.image}}" class="card-img-top" alt="{{news.title}}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{news.title}}</h5>
+                        <hr />
+                        <p class="card-text"><a href="#" class="btn btn-sm btn-primary">Read Full</a></p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+    </div>
+    {% endfor %}
+        <p>
+            <center><button id="VerifyPiNetwork" name="VerifyPiNetwork" class="btn btn-success">Verify your data with Pi
+                    Network</button><br><a><i>Note: only works within the Pi Browser and requires some time (about 5
+                        seconds). After 5 seconds please refresh the page.</i></a><br></center>
+        </p>
+        <p>
+            <center><button id="RefreshUsers" name="RefreshUsers" class="btn btn-info">Refresh Page</button></center>
+        </p>
+        <hr>
+        <!-- <center><button id="DonatePiToCrumbles" name="DonatePiToCrumbles" class="btn btn-success">Donate 1 &pi; to
+                Crumbles</button><br><i>Note: only works within the Pi Browser</i></center> -->
+        <center><br><i>Note: only works within the Pi Browser</i></center>
+        <hr>
+
+<div class="d-flex justify-content-center align-items-center container ">
+
+    <div class="row ">
+        <form class="form-inline">
+            <div class="form-group mx-sm-3 mb-2">
+                <label for="inputPassword2" class="sr-only">Amount</label>
+                <input type="number" class="form-control" id="donate" placeholder="Amount" onkeypress="return (event.charCode !=8 && event.charCode ==0
+                || ( event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57))) " min="0.1000" name="pivalue">
+            </div>
+            <button id="DonatePiToCrumbles" name="DonatePiToCrumbles" class="btn btn-primary mb-2">Donate to Picoin magazine</button>
+        </form>
+    </div>
+</div>
+        <hr>
+        <!-- <button onclick="window.location='http://127.0.0.1:3314/';">Visit Donations Now</button> -->
+
+    </div>
+</div>
+<script src="https://sdk.minepi.com/pi-sdk.js"></script>
+<!-- <script>Pi.init({ version: "2.0", sandbox: true })</script> -->
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+      const Pi = window.Pi;
+        Pi.init({ version: "2.0", sandbox: true })
+
+
+
+        function sendUserInfo(token, username, userroles) {
+            const http = new XMLHttpRequest();
+            url = '/learn'
+            http.open('POST', url);
+            http.setRequestHeader('Content-type', 'application/json');
+            params = {
+                user_token: token,
+                user_name: username,
+                user_roles: userroles
+            };
+            http.send(JSON.stringify(params)) // Make sure to stringify
+            http.onload = function () {
+                // Do whatever with response
+                console.log("Sending data to Backend!")
+            }
+        }
+
+        function sendPaymentDataBackend(data) {
+            const http = new XMLHttpRequest();
+            url = '/learn'
+            http.open('POST', url);
+            http.setRequestHeader('Content-type', 'application/json');
+            params = {
+                action: data['action'],
+                app_client: data['app_client'],
+                paymentId: data['paymentId'],
+                txid: data['txid']
+            };
+            console.log(params)
+            http.send(JSON.stringify(params)) // Make sure to stringify
+            http.onload = function () {
+                // Do whatever with response
+                console.log("Sending data to Backend!")
+            }
+        }
+
+        async function auth() {
+            try {
+                // Identify the user with their username / unique network-wide ID, and get permission to request payments from them.
+                const scopes = ['username', 'payments', 'wallet_address'];
+                function onIncompletePaymentFound(payment) {
+
+                    var data = {
+                        'action': 'complete',
+                        'paymentId': payment.identifier,
+                        'txid': payment.transaction.txid,
+                        'app_client': 'auth_example'
+                    };
+                    return $.post("https://picoinmag.000webhostapp.com/index.php", data).done(function (data) {
+                        $("#button_click").prop("disabled", false);
+                    }).fail(function () {
+                        $("#button_click").prop("disabled", false);
+                    });
+                }; // Read more about this in the SDK reference "http://127.0.0.1:8001/server1.php"
+
+                Pi.authenticate(scopes, onIncompletePaymentFound).then(function (auth) {
+                    // $("#button_click").click(function () {
+                    //     if (parseFloat($("#pi_donate").val()) > 0) {
+                    //         $("#button_click").prop("disabled", true);
+                    //         /*setTimeout(function ()
+                    //         {
+                    //             $("#button_click").prop( "disabled", false );
+                    //         }, 10000);*/
+                    //         transfer();
+                    //     }
+                    //     //alert("Click");
+                    // });
+                    //alert('Hello ' + auth.user.username);
+                }).catch(function (error) {
+                    console.error(error);
+                });
+            } catch (err) {
+                alert(err);
+                // Not able to fetch the user
+            }
+        }
+
+        async function authenticate() {
+            try {
+                const scopes = ['username', 'payments', 'wallet_address'];
+                function onIncompletePaymentFound(payment) {};
+                const authRes = Pi.authenticate(scopes, onIncompletePaymentFound).then(function (authenticate) {
+                    console.log("Lets trap the data");
+                    console.log(authenticate.user); console.log("Hi there we are here");
+                    alert("You are verified as Pi user: " + authenticate.user.username);
+                }).catch(function (error) {
+                    console.error(error)
+                });
+            } catch (err) {
+                console.log("An error during the try/catch-routine of authenticate() occured");
+            }
+        }
+
+        async function transfer() {
+            try {
+                const payment = Pi.createPayment({
+                    // Amount of π to be paid:
+                    amount: document.getElementById('donate').value,
+                    // An explanation of the payment - will be shown to the user:
+                    memo: "Donate to Picoin magazine", // e.g: "Digital kitten #1234",
+                    // An arbitrary developer-provided metadata object - for your own usage:
+                    metadata: { paymentType: "donation" /* ... */ }, // e.g: { kittenId: 1234 }
+                }, {
+                    // Callbacks you need to implement - read more about those in the detailed docs linked below:
+                    onReadyForServerApproval: function (paymentId) {
+                        var data = {
+                            'action': 'approve',
+                            'paymentId': paymentId,
+                            'txid': '',
+                            'app_client': 'auth_example'
+                        };
+                        return $.post("https://picoinmag.000webhostapp.com/index.php", data).done(function (data) {
+                            $("#button_click").prop("disabled", false);
+                        }).fail(function () {
+                            $("#button_click").prop("disabled", false);
+                        });
+                    },
+                    onReadyForServerCompletion: function (paymentId, txid) {
+                        var data = {
+                            'action': 'complete',
+                            'paymentId': paymentId,
+                            "txid": txid,
+                            'app_client': 'auth_example'
+                        };
+                        return $.post("https://picoinmag.000webhostapp.com/index.php", data).done(function (data) {
+                            $("#button_click").prop("disabled", false);
+                        }).fail(function () {
+                            $("#button_click").prop("disabled", false);
+                        });
+                    },
+                    onCancel: function (paymentId) { $("#button_click").prop("disabled", false); /* ... */ },
+                    onError: function (error, payment) { $("#button_click").prop("disabled", false); /* ... */ },
+                });
+            } catch (err) {
+                $("#button_click").prop("disabled", false);
+                alert(err);
+                // Technical problem (eg network failure). Please try again
+            }
+        }
+
+        const shareData = {
+            title: 'Crumbles Test',
+            text: 'Testing the authentication-workflow.'
+        }
+        console.log("sending data to openShareDialog")
+        Pi.openShareDialog(shareData.title, shareData.text);
+        //authenticate();
+        try {
+            document.getElementById("VerifyPiNetwork").addEventListener("click", authenticate);
+            document.getElementById("RefreshUsers").addEventListener("click", function () { window.location.reload() });
+        } catch (err) { console.log("User authentication not available") }
+        try {
+            document.getElementById("DonatePiToCrumbles").addEventListener("click", transfer);
+        } catch (err) { console.log("User donation not available") }
+    })
+</script>
+</main>
+{% endblock %}

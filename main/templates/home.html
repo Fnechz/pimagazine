@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block content %}
+<main class="container mt-3 mb-5">
+	<!-- featured news -->
+	<div class="row my-3">
+		<!-- Left -->
+		<div class="col-md-7">
+			<div class="card mb-3">
+			  <img src="media/{{first_news.image}}" class="card-img-top" alt="{{first_news.title}}">
+			  <div class="card-body">
+			    <h5 class="card-title">{{first_news.title}}</h5>
+			    <hr/>
+			    <p class="card-text"><a href="/detail/{{first_news.id}}" class="btn btn-sm btn-primary">Read Full</a></p>
+			  </div>
+			</div>
+		</div>
+		<!-- Right -->
+		<div class="col-md-5" style="max-height: 450px; overflow: auto;">
+			{% for news in three_news %}
+			<!-- News Box -->
+			<div class="card">
+			  <div class="row no-gutters">
+			    <div class="col-md-4">
+					<img src="media/{{news.image}}" class="card-img-top" alt="{{news.title}}">
+			    </div>
+			    <div class="col-md-8">
+			      <div class="card-body">
+			        <h5 class="card-title">{{news.title}}</h5>
+			        <p class="card-text"><a href="/detail/{{news.id}}" class="btn btn-sm btn-primary">Read Full</a></p>
+			      </div>
+			    </div>
+			  </div>
+			</div>
+			<hr/>
+			{% endfor %}
+		</div>
+	</div>
+	<!-- Category Wise News -->
+	{% for category in three_categories %}
+	<h3 class="border-bottom pb-1">{{category.title}} <a href="/category/{{category.id}}" class="float-right btn btn-sm btn-dark">In this Category</a></h3>
+	<div class="row my-4">
+		{% for news in category.news_set.all %}
+			{% if forloop.counter < 5 %}
+			<!-- News box -->
+			<div class="col-md-3">
+				<div class="card mb-3 shadow">
+				<img src="/media/{{news.image}}" class="card-img-top" alt="{{news.title}}">
+				<div class="card-body">
+					<h5 class="card-title">{{news.title}}</h5>
+					<hr/>
+					<p class="card-text"><a href="#" class="btn btn-sm btn-primary">Read Full</a></p>
+				</div>
+				</div>
+			</div>
+			{% endif %}
+		{% endfor %}
+	</div>
+	<style type="text/css">
+		.card-img-top {
+			width: 100%;
+			height: 15vw;
+			object-fit: cover;
+		}
+	</style>
+	{% endfor %}
+	
+	<!-- End Single Category -->
+	<script>
+		// Hacking react-scripts method for defining environment variables because we want to be able to
+		// pass them at runtime when the container starts, instead of having to build the frontend once for
+		// each environment (e.g staging / production).
+		//
+		// This will be automatically templated:
+		// - in DEV, by react-scripts (see https://create-react-app.dev/docs/adding-custom-environment-variables/)
+		// - in PROD, by the container's entrypoint script found in docker/entrypoint.sh (this enables passing the
+		//   variables at runtime instead of consuming it at build time and building a non-portable container)
+		window.__ENV = {
+			sandbox: "true",
+		}
+	</script>
+
+	<!-- Import the Pi Network App Platform SDK: -->
+	<script src="https://sdk.minepi.com/pi-sdk.js"></script>
+	
+	<!-- TODO make sandbox conditional to env (dev / prod) -->
+	<script>
+		// Make the decision whether Pi SDK should run in "Sandbox" mode or "Pi Browser" mode based on the
+		// dedicated environment variable:
+		var runSDKInSandboxMode = window.__ENV.sandbox === "true"; // treat env vars as strings, not booleans
+
+		// Init Pi SDK:
+		Pi.init({ version: "2.0", sandbox: runSDKInSandboxMode });
+	</script>
+	
+</main>
+{% endblock %}
+

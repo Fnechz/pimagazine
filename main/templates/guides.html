@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Guides{% endblock %}
+{% block content %}
+
+<main class="container mt-3 mb-5">
+    <h1 class="border-bottom pb-1 my-4">GUIDES</h1>
+    <!-- <div class="row"> -->
+    <div class="main">
+
+        <p>New to PI Network? Here's a few articles on where you can learn the basics about why 
+        the Pi cryptocurrency should be something you're knowledgable about. Millions of people around the world are already
+        connected on the Pi Network because it is Secure, Immutable, non-counterfeitable and interoperable digital money.</p>
+
+        <p>You can read the <a href=" https://minepi.com/white-paper">white paper</a> for more indepth detail about the
+            network.</p>
+
+        <p><iframe style="display: block; margin: auto;" width="538" height="303"
+                src="https://www.youtube.com/embed/MsOaC61cR3U" title="Pi" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe></p>
+
+    </div>
+    <hr>
+    <div class="row my-4">
+        {% for news in guide_news %}
+        <!-- {% if forloop.counter < 5 %}  -->
+            <div class="col-md-3">
+                <div class="card mb-3 shadow">
+                    <img src="/media/{{news.image}}" class="card-img-top" alt="{{news.title}}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{news.title}}</h5>
+                        <hr />
+                        <p class="card-text"><a href="/detail/{{news.id}}" class="btn btn-sm btn-primary">Read Full</a></p>
+                    </div>
+                </div>
+            </div>
+            <!-- {% endif %} -->
+            {% endfor %}
+    </div>
+    <style type="text/css">
+        .card-img-top {
+            width: 100%;
+            height: 15vw;
+            object-fit: cover;
+        }
+    </style>
+</main>
+{% endblock %}
