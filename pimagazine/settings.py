@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-b#)2kpll_xwqo6i7!#z8iu3*0j$mmra$k)o&2=fu9ka!m(j3v2
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['417b-154-242-135-87.eu.ngrok.io','127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 # Application definition
@@ -78,10 +78,10 @@ WSGI_APPLICATION = 'pimagazine.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'picoimagazine',
-        'USER': 'farain',
-        'PASSWORD' : '@fnechz43',
-        'HOST' : '127.0.0.1',
+        'NAME': '',
+        'USER': '',
+        'PASSWORD' : '',
+        'HOST' : '',
         'PORT' : '5432',
     }
 }
